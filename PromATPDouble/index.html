@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PromATP 2v2 - Doubles Ping Pong Ranking</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    body { background-color: #111525; color: #F3F5FA; }
+    .custom-card { background-color: #20283A; border-color: #354057; }
+    .custom-input { background-color: #111525; border-color: #354057; color: #F3F5FA; }
+    .custom-input:focus { border-color: #354057; outline: none; box-shadow: 0 0 0 2px rgba(53, 64, 87, 0.5); }
+    .text-secondary { color: #94A3BD; }
+</style>
+</head>
+<body class="min-h-screen p-4 font-sans">
+
+    <div class="max-w-7xl mx-auto p-4 sm:p-6">
+        <header class="text-center mb-10">
+            <h1 class="text-5xl font-black tracking-wider flex items-center justify-center gap-3">
+                <span>🏓</span>
+                <span class="bg-gradient-to-r from-red-500 via-rose-500 to-amber-500 bg-clip-text text-transparent drop-shadow-sm">PromATP 2v2</span>
+            </h1>
+            <p class="text-secondary mt-2 font-medium tracking-wide">Official Doubles Ping Pong Tournament by Prometeia S.p.A.</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+            <!-- LEFT COLUMN -->
+            <div class="space-y-6">
+                <!-- 1. Add Player -->
+                <div class="custom-card p-5 rounded-2xl shadow-xl border">
+                    <h2 class="text-xl font-bold mb-4" style="color: #6EE7B7;">👤 NEW PLAYER</h2>
+                    <div class="flex gap-2">
+                        <input type="text" id="playerName" placeholder="Player name..." class="custom-input flex-1 border rounded-xl px-4 py-2.5 transition">
+                        <button onclick="addPlayer()" class="text-white px-5 py-2.5 rounded-xl font-bold transition shadow-lg" style="background-color: #4FA878;">ADD</button>
+                    </div>
+                </div>
+
+                <!-- 2. Record 2v2 Match -->
+                <div class="custom-card p-5 rounded-2xl shadow-xl border">
+                    <h2 class="text-xl font-bold mb-4" style="color: #F5B942;">⚔️ RECORD 2v2 MATCH</h2>
+                    <div class="space-y-4">
+                        <!-- Team 1 -->
+                        <div class="p-3 rounded-xl border border-slate-700/70 bg-slate-900/40">
+                            <p class="text-xs font-bold uppercase tracking-wider text-sky-400 mb-2">Team 1 (Blue)</p>
+                            <div class="flex flex-col sm:flex-row gap-2">
+                                <select id="t1p1Select" class="custom-input flex-1 border rounded-xl px-3 py-2 text-sm transition player-select">
+                                    <option value="">Player 1</option>
+                                </select>
+                                <select id="t1p2Select" class="custom-input flex-1 border rounded-xl px-3 py-2 text-sm transition player-select">
+                                    <option value="">Player 2</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Team 2 -->
+                        <div class="p-3 rounded-xl border border-slate-700/70 bg-slate-900/40">
+                            <p class="text-xs font-bold uppercase tracking-wider text-rose-400 mb-2">Team 2 (Red)</p>
+                            <div class="flex flex-col sm:flex-row gap-2">
+                                <select id="t2p1Select" class="custom-input flex-1 border rounded-xl px-3 py-2 text-sm transition player-select">
+                                    <option value="">Player 3</option>
+                                </select>
+                                <select id="t2p2Select" class="custom-input flex-1 border rounded-xl px-3 py-2 text-sm transition player-select">
+                                    <option value="">Player 4</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Winner & Save -->
+                        <div class="flex gap-2 items-center pt-1">
+                            <select id="winnerSelect" class="custom-input flex-1 border rounded-xl px-4 py-2.5 transition">
+                                <option value="">Which team won?</option>
+                                <option value="team1">🏆 Team 1 Won</option>
+                                <option value="team2">🏆 Team 2 Won</option>
+                            </select>
+                            <button onclick="recordMatch()" class="text-slate-950 px-6 py-2.5 rounded-xl font-extrabold transition shadow-lg" style="background-color: #F2B13B;">SAVE</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Match History -->
+                <div class="custom-card p-5 rounded-2xl shadow-xl border">
+                    <h2 class="text-xl font-bold mb-4" style="color: #D084F5;">📜 MATCH HISTORY</h2>
+                    <div id="matchHistory" class="space-y-3 max-h-[350px] overflow-y-auto pr-1">
+                        <p class="text-secondary text-sm italic">No matches recorded yet.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Leaderboard -->
+            <div class="custom-card p-5 rounded-2xl shadow-xl border lg:sticky lg:top-6">
+                <h2 class="text-xl font-bold mb-4" style="color: #38BDF8;">🏆 DOUBLES INDIVIDUAL RANKING</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b" style="border-color: #354057;">
+                                <th class="p-3 text-secondary text-sm">POS</th>
+                                <th class="p-3 text-secondary text-sm">PLAYER</th>
+                                <th class="p-3 text-center text-secondary text-sm">ELO</th>
+                                <th class="p-3 text-center text-secondary text-sm">W / L</th>
+                                <th class="p-3 text-center text-secondary text-sm">ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    const DEFAULT_ELO = 1000;
+    const K_FACTOR = 32;
+    const WEIGHT_EXPONENT = 3.5;
+
+    let players = [];
+    let matches = [];
+
+    // =========================================================
+    // 2v2 WEIGHTED ELO CALCULATION
+    // =========================================================
+    function calculate2v2Points(w1Elo, w2Elo, l1Elo, l2Elo) {
+        const winnerAvg = (w1Elo + w2Elo) / 2;
+        const loserAvg = (l1Elo + l2Elo) / 2;
+
+        const expectedWin = 1 / (1 + Math.pow(10, (loserAvg - winnerAvg) / 400));
+        const totalStake = Math.max(4, Math.round(K_FACTOR * (1 - expectedWin)));
+
+        const w1Weight = Math.pow(1 / w1Elo, WEIGHT_EXPONENT);
+        const w2Weight = Math.pow(1 / w2Elo, WEIGHT_EXPONENT);
+        const wTotalWeight = w1Weight + w2Weight;
+
+        const w1Gain = Math.round(totalStake * (w1Weight / wTotalWeight));
+        const w2Gain = totalStake - w1Gain;
+
+        const l1Weight = Math.pow(l1Elo, WEIGHT_EXPONENT);
+        const l2Weight = Math.pow(l2Elo, WEIGHT_EXPONENT);
+        const lTotalWeight = l1Weight + l2Weight;
+
+        const l1Loss = Math.round(totalStake * (l1Weight / lTotalWeight));
+        const l2Loss = totalStake - l1Loss;
+
+        return { totalStake, w1Gain, w2Gain, l1Loss, l2Loss };
+    }
+
+    // =========================================================
+    // LOAD DATA
+    // =========================================================
+    async function loadData() {
+        try {
+            const response = await fetch('/.netlify/functions/data', {
+                method: 'GET',
+                cache: 'no-store'
+            });
+            if (!response.ok) throw new Error('Unable to load data');
+
+            const data = await response.json();
+            players = data.players || [];
+            matches = data.matches || [];
+            updateUI();
+        } catch (e) {
+            console.error("Error loading data:", e);
+        }
+    }
+
+    // =========================================================
+    // ADD PLAYER
+    // =========================================================
+    async function addPlayer() {
+        const nameInput = document.getElementById('playerName');
+        const name = nameInput.value.trim();
+        if (!name) return alert('Please enter a valid name!');
+
+        try {
+            const response = await fetch('/.netlify/functions/players', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+            });
+            const data = await response.json();
+            if (!response.ok) return alert(data.error || 'Unable to add player.');
+
+            nameInput.value = '';
+            await loadData();
+        } catch (e) {
+            console.error("Error adding player:", e);
+            alert('Error adding player.');
+        }
+    }
+
+    // =========================================================
+    // RECORD 2v2 MATCH
+    // =========================================================
+    async function recordMatch() {
+        const t1p1Id = document.getElementById('t1p1Select').value;
+        const t1p2Id = document.getElementById('t1p2Select').value;
+        const t2p1Id = document.getElementById('t2p1Select').value;
+        const t2p2Id = document.getElementById('t2p2Select').value;
+        const winnerTeam = document.getElementById('winnerSelect').value;
+
+        if (!t1p1Id || !t1p2Id || !t2p1Id || !t2p2Id) {
+            return alert('Please select all 4 players!');
+        }
+
+        const uniqueIds = new Set([t1p1Id, t1p2Id, t2p1Id, t2p2Id]);
+        if (uniqueIds.size !== 4) {
+            return alert('All 4 players must be different!');
+        }
+
+        if (!winnerTeam) {
+            return alert('Please select which team won!');
+        }
+
+        const getPlayer = id => players.find(p => String(p.id) === String(id));
+        const t1p1 = getPlayer(t1p1Id);
+        const t1p2 = getPlayer(t1p2Id);
+        const t2p1 = getPlayer(t2p1Id);
+        const t2p2 = getPlayer(t2p2Id);
+
+        const isTeam1Winner = winnerTeam === 'team1';
+        const winners = isTeam1Winner ? [t1p1, t1p2] : [t2p1, t2p2];
+        const losers  = isTeam1Winner ? [t2p1, t2p2] : [t1p1, t1p2];
+
+        const { totalStake, w1Gain, w2Gain, l1Loss, l2Loss } = calculate2v2Points(
+            winners[0].elo, winners[1].elo,
+            losers[0].elo, losers[1].elo
+        );
+
+        const matchPayload = {
+            mode: '2v2',
+            winner1_id: winners[0].id,
+            winner2_id: winners[1].id,
+            loser1_id: losers[0].id,
+            loser2_id: losers[1].id,
+            w1_delta: w1Gain,
+            w2_delta: w2Gain,
+            l1_delta: -l1Loss,
+            l2_delta: -l2Loss,
+            total_points: totalStake
+        };
+
+        try {
+            const response = await fetch('/.netlify/functions/matches', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(matchPayload)
+            });
+
+            const data = await response.json();
+            if (!response.ok) return alert(data.error || 'Error saving match.');
+
+            document.getElementById('winnerSelect').value = '';
+            await loadData();
+        } catch (e) {
+            console.error("Error recording match:", e);
+            alert('Error recording match.');
+        }
+    }
+
+    // =========================================================
+    // DELETE PLAYER
+    // =========================================================
+    async function deletePlayer(id) {
+        const pwd = prompt("Enter owner password:");
+        if (pwd === null) return;
+
+        try {
+            const response = await fetch('/.netlify/functions/admin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'deletePlayer', id, password: pwd })
+            });
+            const data = await response.json();
+            if (!response.ok) return alert(data.error || 'Unable to delete player.');
+
+            await loadData();
+            alert("Player successfully deleted.");
+        } catch (e) {
+            console.error("Error deleting player:", e);
+            alert("Error deleting player.");
+        }
+    }
+
+    // =========================================================
+    // UPDATE UI (Leaderboard, Dropdowns, History)
+    // =========================================================
+    function updateUI() {
+        const sortedPlayers = [...players].sort((a, b) => b.elo - a.elo);
+
+        const tbody = document.getElementById('leaderboardTable');
+        tbody.innerHTML = sortedPlayers.map((p, idx) => `
+            <tr class="border-b hover:bg-slate-800/40 transition" style="border-color: #354057;">
+                <td class="p-3 font-bold text-secondary">#${idx + 1}</td>
+                <td class="p-3 font-semibold">${p.name}</td>
+                <td class="p-3 text-center font-mono font-bold text-sky-400">${Math.round(p.elo)}</td>
+                <td class="p-3 text-center text-sm text-secondary">${p.wins || 0}W / ${p.losses || 0}L</td>
+                <td class="p-3 text-center">
+                    <button onclick="deletePlayer('${p.id}')" class="text-xs px-2.5 py-1 rounded-lg bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 font-semibold transition">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+
+        const selectIds = ['t1p1Select', 't1p2Select', 't2p1Select', 't2p2Select'];
+        const labels = ['Player 1 (Team 1)', 'Player 2 (Team 1)', 'Player 3 (Team 2)', 'Player 4 (Team 2)'];
+
+        selectIds.forEach((selectId, i) => {
+            const select = document.getElementById(selectId);
+            const currentVal = select.value;
+            select.innerHTML = `<option value="">${labels[i]}</option>` +
+                sortedPlayers.map(p => `<option value="${p.id}">${p.name} (${Math.round(p.elo)})</option>`).join('');
+            select.value = currentVal;
+        });
+
+        const historyDiv = document.getElementById('matchHistory');
+        if (!matches.length) {
+            historyDiv.innerHTML = `<p class="text-secondary text-sm italic">No matches recorded yet.</p>`;
+            return;
+        }
+
+        const getName = id => players.find(p => String(p.id) === String(id))?.name || 'Unknown';
+
+        historyDiv.innerHTML = matches.map(m => `
+            <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-700/60 text-sm flex flex-col gap-1">
+                <div class="flex justify-between items-center">
+                    <span class="text-emerald-400 font-bold">
+                        🏆 ${getName(m.winner1_id)} (+${m.w1_delta}) & ${getName(m.winner2_id)} (+${m.w2_delta})
+                    </span>
+                </div>
+                <div class="text-rose-400/90 text-xs">
+                    ❌ ${getName(m.loser1_id)} (${m.l1_delta}) & ${getName(m.loser2_id)} (${m.l2_delta})
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Initialize
+    loadData();
+</script>
+</body>
+</html>

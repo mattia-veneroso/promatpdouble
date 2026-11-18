@@ -1,0 +1,6 @@
+{
+  "name": "promatp-2v2",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0"
+  }
+}
